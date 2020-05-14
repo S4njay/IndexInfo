@@ -1,0 +1,39 @@
+.nameCol {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: lighter;
+}
+
+.col {
+    font-weight: 200;
+    text-align:left;
+}
+
+.symbolCol {
+    font-weight: normal;
+}
+
+.priceColPositive {
+    animation: changePositive 3s step-start both;
+    font-weight: bolder;
+
+}
+
+.priceCol {
+    text-align: right;
+}
+
+@keyframes changePositive {
+    from { color: rgb(37, 37, 41) }
+    to   { color: green }
+}
+
+.priceColNegative {
+    animation: changeNegative 3s step-start both;
+}
+
+@keyframes changeNegative {
+    from { color: rgb(37, 37, 41) }
+    to   { color: red }
+}

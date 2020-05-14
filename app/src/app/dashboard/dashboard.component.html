@@ -1,0 +1,18 @@
+<h1>Your watchlist</h1>
+<div *ngIf="stockPrices.length > 0" style="width: 100%;">
+    <div class="row" *ngFor="let stockPrice of stockPrices">
+        <div class="col-lg-4 nameCol">{{stockPrice.longName}}</div>
+        <div class="col symbolCol">{{stockPrice.symbol}}</div>
+        <div class="col priceCol" *ngIf="stockPrice.bid != 0"
+            [class.priceColPositive]="stockPrice.tickChangePositive === true"
+            [class.priceColNegative]="stockPrice.tickChangePositive === false">{{stockPrice.bid | number:"0.1-2"}}</div>
+        <div class="col priceCol" *ngIf="stockPrice.bid == 0">{{stockPrice.regularMarketPrice}}</div>
+        <div class="col priceCol" [class.text-danger]="stockPrice.bid < stockPrice.previousClose"
+            [class.text-success]="stockPrice.bid >  stockPrice.previousClose">
+            {{stockPrice.previousCloseChange}}</div>
+        <div class="col priceCol" *ngIf="stockPrice.bid == 0"
+            [class.text-danger]="stockPrice.regularMarketPrice <  stockPrice.previousClose"
+            [class.text-success]="stockPrice.regularMarketPrice >  stockPrice.previousClose">
+            {{stockPrice.previousCloseChange}}</div>
+    </div>
+</div>
