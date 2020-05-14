@@ -101,7 +101,7 @@ namespace IndexInfo.WebApi.Controllers
             {
                 // TODO: move to config
                 var streamAsync = await client.GetStreamAsync(
-                    $"http://localhost:5000/api/v1/quotes?id={id}");
+                    $"http://host.docker.internal:5000/api/v1/quotes?id={id}");
 
                 stockPrice = await JsonSerializer
                 .DeserializeAsync<StockPrice>(streamAsync);

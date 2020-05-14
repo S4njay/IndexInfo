@@ -10,7 +10,7 @@ export class StockPriceService {
 
   constructor(private http: HttpClient) { }
 
-  baseUrl = "https://localhost:5001/api/StockPrices/";
+  baseUrl = "http://localhost:5001/api/StockPrices/";
 
   getStockPrice(symbol: string): Observable<any> {
     return this.http.get(this.baseUrl + `${symbol}`);

@@ -45,6 +45,8 @@ namespace IndexInfo.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
+            // app.UseEndpoints(e => );
+
             app.UseCors("AllowAll");
 
             // app.UseHttpsRedirection();

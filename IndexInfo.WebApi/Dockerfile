@@ -1,18 +1,16 @@
-# Sample contents of Dockerfile
- # Stage 1
- FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS builder
- WORKDIR /source
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+WORKDIR /app
 
- # caches restore result by copying csproj file separately
- COPY *.csproj .
- RUN dotnet restore
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
- # copies the rest of your code
- COPY . .
- RUN dotnet publish --output /app/ --configuration Release
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
- # Stage 2
- FROM mcr.microsoft.com/dotnet/core/runtime:3.1
- WORKDIR /app
- COPY --from=builder /app .
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=build-env /app/out .
  ENTRYPOINT ["dotnet", "IndexInfo.WebApi.dll"]

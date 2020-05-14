@@ -35,3 +35,8 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+IndexInfo.OutboundApi/*/build
+IndexInfo.OutboundApi/*/dist
+IndexInfo.OutboundApi/*/*.egg*
+
