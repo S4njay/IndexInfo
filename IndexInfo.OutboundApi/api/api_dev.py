@@ -1,7 +1,7 @@
 import flask
 import ssl
 from flask import request, jsonify
-import yfinance as yf
+import json
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True

@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using IndexInfo.WebApi.Controllers;
+using IndexInfo.WebApi.Services;
+using RandomNameGeneratorLibrary;
 
 namespace IndexInfo.WebApi
 {
@@ -23,7 +26,9 @@ namespace IndexInfo.WebApi
         {
             services.AddDbContext<StockContext>(opt => opt.UseInMemoryDatabase("StockPrices"));
             services.AddControllers();
+            services.AddTransient<PlaceNameGenerator>();
             services.AddTransient<IServiceBus, AzureServiceBus>();
+            services.AddTransient<IStockPricesService, FakeStockPricesService>();
             var corsBuilder = new CorsPolicyBuilder();
             corsBuilder.AllowAnyHeader();
             corsBuilder.AllowAnyMethod();

@@ -10,6 +10,7 @@ using System.Text.Json;
 
 namespace IndexInfo.WebApi.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class StockPricesController : ControllerBase
@@ -17,11 +18,16 @@ namespace IndexInfo.WebApi.Controllers
         private readonly StockContext _context;
         private readonly IServiceBus _bus;
 
+        private readonly IStockPricesService _stockPricesService;
 
-        public StockPricesController(StockContext context, IServiceBus bus)
+
+        public StockPricesController(StockContext context,
+                                    IServiceBus bus,
+                                    IStockPricesService stockPricesService)
         {
             _context = context;
             _bus = bus;
+            _stockPricesService = stockPricesService;
         }
 
         // GET: api/StockPrices
@@ -44,7 +50,7 @@ namespace IndexInfo.WebApi.Controllers
                     System.Console.WriteLine($"Stock Price for {id} not found in local store.");
                     System.Console.WriteLine($"Making flight to outbound api to get stock price for {id}");
                     StockPrice createStockPrice = null;
-                    createStockPrice = await GetStockPriceFromOutboundApi(id);
+                    createStockPrice = await _stockPricesService.GetStockPriceFromOutboundApi(id);
 
                     return await PostStockPrice(createStockPrice);
                 }
@@ -57,33 +63,12 @@ namespace IndexInfo.WebApi.Controllers
 
             //TODO: Move To config
 
-            if (true)
-            {
-                if (stockPrice.dateUpdated < DateTime.Now.AddSeconds(-5))
-                {
-                    System.Console.WriteLine($"Local stock stock price for {id} is old.");
-                    System.Console.WriteLine($"Making flight to outbound api to get stock price for {id}");
-                    
-                    var updatedStockPrice = await GetStockPriceFromOutboundApi(id);
-
-                    stockPrice.bid = updatedStockPrice.bid;
-                    stockPrice.longName = updatedStockPrice.longName;
-                    stockPrice.previousClose = updatedStockPrice.previousClose;
-                    stockPrice.regularMarketPreviousClose = updatedStockPrice.regularMarketPreviousClose;
-
-                    await PutStockPrice(id, stockPrice);
-                }
-                else
-                {
-                    System.Console.WriteLine($"Returning local store value for {id}");
-                }
-
-            }
-            if (stockPrice.dateUpdated < DateTime.Now.AddMinutes(-1) && false)
+            if (stockPrice.dateUpdated < DateTime.Now.AddSeconds(-5))
             {
                 System.Console.WriteLine($"Local stock stock price for {id} is old.");
                 System.Console.WriteLine($"Sending an update stock price command to service for {id}");
-                await _bus.SendCommandAsync(new AzureUpdateStockPriceCommand(id));
+
+                await _stockPricesService.SendUpdateStockPriceCommand(_bus, id, stockPrice);
                 stockPrice.dateUpdated = DateTime.Now;
                 await PutStockPrice(id, stockPrice);
             }
@@ -94,21 +79,7 @@ namespace IndexInfo.WebApi.Controllers
             return stockPrice;
         }
 
-        private static async Task<StockPrice> GetStockPriceFromOutboundApi(string id)
-        {
-            StockPrice stockPrice;
-            using (var client = new HttpClient())
-            {
-                // TODO: move to config
-                var streamAsync = await client.GetStreamAsync(
-                    $"http://host.docker.internal:5000/api/v1/quotes?id={id}");
-
-                stockPrice = await JsonSerializer
-                .DeserializeAsync<StockPrice>(streamAsync);
-            }
-
-            return stockPrice;
-        }
+        
 
         // PUT: api/StockPrices/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
