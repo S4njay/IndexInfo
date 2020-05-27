@@ -10,5 +10,6 @@ namespace IndexInfo.WebApi.Model
         }
 
         public DbSet<StockPrice> StockPrices {get;set;}
+        public DbSet<StockPriceHistory> StockPricesHistory {get;set;}
     }
 }

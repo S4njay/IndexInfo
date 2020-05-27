@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using IndexInfo.WebApi.Model;
 using System.Net.Http;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace IndexInfo.WebApi.Services
 {
@@ -23,9 +24,19 @@ namespace IndexInfo.WebApi.Services
             return stockPrice;
         }
 
+        public Task<IEnumerable<StockPriceHistory>> GetStockPriceHistoryFromOutboundApi(string id, double bid)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task SendUpdateStockPriceCommand(IServiceBus bus,string id, StockPrice existingStockPrice)
         {
             await bus.SendCommandAsync(new AzureUpdateStockPriceCommand(id));
+        }
+
+        public Task SendUpdateStockPriceHistoryCommand(IServiceBus _bus, string id, StockPriceHistory stockPrice)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

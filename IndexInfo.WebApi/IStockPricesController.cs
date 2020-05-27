@@ -8,6 +8,8 @@ namespace IndexInfo.WebApi
     public interface IStockPricesService
     {
         Task<StockPrice> GetStockPriceFromOutboundApi(string id);
+        Task<IEnumerable<StockPriceHistory>> GetStockPriceHistoryFromOutboundApi(string id, double bid);
         Task SendUpdateStockPriceCommand(IServiceBus _bus, string id, StockPrice stockPrice);
+        Task SendUpdateStockPriceHistoryCommand(IServiceBus _bus, string id, StockPriceHistory stockPrice);
     }
 }
