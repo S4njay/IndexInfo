@@ -5,6 +5,19 @@
     font-weight: lighter;
 }
 
+.row.table{
+    border-bottom: dashed 1px;
+    border-bottom-color: grey;
+    cursor: pointer;
+}
+
+.row.selected {
+    border: solid 1px;
+    background-color: lightgrey;
+}
+
+
+
 .col {
     font-weight: 200;
     text-align:left;
@@ -22,6 +35,11 @@
 
 .priceCol {
     text-align: right;
+}
+
+.col.chartCol {
+    width:100%;
+    text-align: center !important;
 }
 
 @keyframes changePositive {

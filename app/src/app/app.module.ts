@@ -9,6 +9,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { MarketsComponent } from './markets/markets.component';
 import { NewsComponent } from './news/news.component';
+import { GoogleChartsModule } from 'angular-google-charts';
+
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { NewsComponent } from './news/news.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    GoogleChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

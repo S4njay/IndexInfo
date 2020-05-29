@@ -3,6 +3,8 @@ import { StockPriceService } from '../common/stock-price.service';
 import { StockPrice } from '../common/stock-price';
 import { interval } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { GoogleChartsModule } from 'angular-google-charts'
+import { StockPriceHistory } from '../common/stock-price-history';
 
 
 
@@ -19,10 +21,12 @@ export class DashboardComponent implements OnInit {
   uksymbols = ['RB.L', 'BATS.L', 'RTO.L','CCL.L', 'TSCO.L', 'RR.L'];
   stockPrices: StockPrice[] = [];
   interval: any;
+  chart = {};
+  selectedSymbol = '';
 
   ngOnInit() {
     this.update();
-    interval(5000).subscribe(x => this.update());
+    interval(15000).subscribe(x => this.update());
   }
 
   update() {
@@ -36,6 +40,36 @@ export class DashboardComponent implements OnInit {
           this.reshapeServiceData(newStockPrice, element);
         })
     });
+  }
+
+  onSelectStock(symbol)  {   
+
+    this.stockPriceService
+      .getStockPriceHistory(symbol)
+      .subscribe(data => {
+
+        var TwoDArrayData = this.prepareChartData(data);
+        console.log(TwoDArrayData);
+        this.chart[symbol] = {
+          title: symbol,
+          type: 'Line',
+          width: '800px',
+          height: 800,
+          data: TwoDArrayData     
+        };
+        this.selectedSymbol = symbol;
+      })
+  }
+  prepareChartData(data: StockPriceHistory[]) {
+    let finalData = [];
+    let cnt = data.length - 1;
+    data.forEach(element => {
+      let ohlc = [cnt, element.close];
+      cnt--;
+      finalData.push(ohlc);
+    });
+
+    return finalData;
   }
 
   private reshapeServiceData(newStockPrice: StockPrice, symbol: string) {
