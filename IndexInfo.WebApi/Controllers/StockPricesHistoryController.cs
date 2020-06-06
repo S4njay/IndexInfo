@@ -60,7 +60,7 @@ namespace IndexInfo.WebApi.Controllers
             //TODO: Move To config
 
             var lastStockPriceHistory = stockPriceHistory.OrderByDescending(x => x.date).FirstOrDefault();
-            if (lastStockPriceHistory.date < DateTime.Today.Subtract(baseDate).TotalSeconds)
+            if (lastStockPriceHistory.date  < DateTime.Today.AddDays(-2).Subtract(baseDate).TotalSeconds)
             {
                 System.Console.WriteLine($"Local stock stock price history for {id} is old.");
                 System.Console.WriteLine($"Sending an update stock price history command to service for {id}");

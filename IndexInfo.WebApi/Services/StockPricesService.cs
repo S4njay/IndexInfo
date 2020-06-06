@@ -9,7 +9,7 @@ namespace IndexInfo.WebApi.Services
 {
     public class StockPricesService : IStockPricesService
     {
-        public double RefreshInterval => 60;
+        public double RefreshInterval => 60 * 5;
 
         public async Task<StockPrice> GetStockPriceFromOutboundApi(string id)
         {

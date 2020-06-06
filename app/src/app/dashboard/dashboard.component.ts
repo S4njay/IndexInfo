@@ -78,27 +78,33 @@ export class DashboardComponent implements OnInit {
       .getStockPriceHistory(symbol)
       .subscribe(data => {
         this.stockPriceHistories[symbol] = data;
-        var TwoDArrayData = this.prepareChartData(data);
-        this.chart[symbol] = {
-          title: symbol,
-          type: 'Line',
-          width: '800px',
-          height: 800,
-          data: TwoDArrayData
-        };
+        this.setChart(data, symbol);
         this.selectedSymbol = symbol;
       })
   }
 
+  private setChart(data: StockPriceHistory[], symbol: any) {
+    var TwoDArrayData = this.prepareChartData(data);
+    this.chart[symbol] = {
+      title: symbol,
+      type: 'Line',
+      width: '800px',
+      height: 800,
+      data: TwoDArrayData
+    };
+  }
+
   onCurrencyChange(symbol, currency){
     var stockPrice = this.stockPrices[symbol];
-    if(stockPrice.viewCurrency === currency)
+
+    if(stockPrice.currency === currency)
     {
-      return;
+      this.setChart(this.stockPriceHistories[symbol], symbol);
+      this.stockPrices[symbol].viewCurrency = currency;
+      return;     
     }
 
     let currencyPair = stockPrice.viewCurrency + currency + "=X";
-
     let adjustedSph = this.adjustForCurrency(
       this.stockPriceHistories[symbol], 
       this.stockPriceHistories[currencyPair]);
@@ -113,11 +119,10 @@ export class DashboardComponent implements OnInit {
   }
 
   prepareChartData(data: StockPriceHistory[]) {
-    console.log(data);
     let finalData = [];
     let cnt = data.length - 1;
     data.forEach(element => {
-      let ohlc = [element.date, element.close];
+      let ohlc = [new Date(element.date * 1000), element.close];
       cnt--;
       finalData.push(ohlc);
     });
@@ -126,20 +131,30 @@ export class DashboardComponent implements OnInit {
   }
 
   adjustForCurrency(existing: StockPriceHistory[], currency: StockPriceHistory[]) {
-    let combined = existing.concat(currency);
-    let min = Math.min.apply(Math, combined.map(o => {return o.date;}));
-    let max = Math.max.apply(Math, combined.map(o => {return o.date;}));
+    let min1 = Math.min.apply(Math, existing.map(o => o.date));
+    let min2 = Math.min.apply(Math, currency.map(o => o.date));
+    let max1 = Math.max.apply(Math, existing.map(o => o.date));
+    let max2 = Math.max.apply(Math, currency.map(o => o.date));
 
-    let newStockPriceHistory: StockPriceHistory[] = existing.filter(x => x.date >= min && x.date <= max);
-    let newCurrency: StockPriceHistory[] = currency.filter(x => x.date >= min && x.date <= max);
+    let min = Math.max(min1, min2);
+    let max = Math.min(max1, max2);
+
+    let newStockPriceHistory: StockPriceHistory[] = existing
+      .filter(x => x.date >= min && x.date <= max)
+      .sort(x => x.date);
+
+    let newCurrency: StockPriceHistory[] = currency
+      .filter(x => x.date >= min && x.date <= max)
+      .sort(x => x.date);
 
     let finalData = [];
-    let cnt = newStockPriceHistory.length - 1;
-    newStockPriceHistory.forEach(element => {
-      let ohlc = [element.date, element.close * newCurrency[cnt].close];
-      cnt--;
-      finalData.push(ohlc);
-    });
+
+    for(var i=0; i < Math.min(newStockPriceHistory.length, newCurrency.length); i++) {
+      let ohlc = [new Date(newStockPriceHistory[i].date * 1000), 
+        newStockPriceHistory[i].close * newCurrency[i].close];
+        finalData.push(ohlc);        
+    }
+
     return finalData;
   }
 
