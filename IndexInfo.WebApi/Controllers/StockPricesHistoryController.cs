@@ -15,9 +15,9 @@ namespace IndexInfo.WebApi.Controllers
     {
         private readonly StockContext _context;
         private readonly IServiceBus _bus;
-
         private readonly IStockPricesService _stockPricesService;
 
+        private readonly DateTime baseDate = new DateTime (1970, 01, 01);
 
         public StockPricesHistoryController(StockContext context,
                                     IServiceBus bus,
@@ -34,7 +34,7 @@ namespace IndexInfo.WebApi.Controllers
         {
             var stockPriceHistory = await _context.StockPricesHistory.Where(x => x.symbol == id)
                                     .ToListAsync();
-            var lastBid = await _stockPricesService.GetStockPriceFromOutboundApi(id);
+            var lastBid = await _context.StockPrices.FirstOrDefaultAsync(x => x.symbol == id);
 
 
             if (stockPriceHistory.Count() == 0)
@@ -46,7 +46,7 @@ namespace IndexInfo.WebApi.Controllers
                     
                     IEnumerable<StockPriceHistory> createStockPriceHistory = null;
                     createStockPriceHistory = await _stockPricesService
-                        .GetStockPriceHistoryFromOutboundApi(id, lastBid.bid.Value);
+                        .GetStockPriceHistoryFromOutboundApi(id, lastBid?.bid ?? 0);
 
                     return await PostStockPriceHistory(createStockPriceHistory);
                 }
@@ -59,8 +59,8 @@ namespace IndexInfo.WebApi.Controllers
 
             //TODO: Move To config
 
-            var lastStockPriceHistory = stockPriceHistory.OrderByDescending(x => x.Date).FirstOrDefault();
-            if (lastStockPriceHistory.Date < DateTime.Today)
+            var lastStockPriceHistory = stockPriceHistory.OrderByDescending(x => x.date).FirstOrDefault();
+            if (lastStockPriceHistory.date < DateTime.Today.Subtract(baseDate).TotalSeconds)
             {
                 System.Console.WriteLine($"Local stock stock price history for {id} is old.");
                 System.Console.WriteLine($"Sending an update stock price history command to service for {id}");
@@ -123,7 +123,7 @@ namespace IndexInfo.WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StockPriceHistoryExists(id, stockPriceHistory.Date))
+                if (!StockPriceHistoryExists(id, stockPriceHistory.date.Value))
                 {
                     return NotFound();
                 }
@@ -141,9 +141,9 @@ namespace IndexInfo.WebApi.Controllers
             return _context.StockPrices.Any(e => e.symbol == id);
         }
 
-        private bool StockPriceHistoryExists(string id, DateTime date)
+        private bool StockPriceHistoryExists(string id, double date)
         {
-            return _context.StockPricesHistory.Any(e => e.symbol == id && e.Date == date);
+            return _context.StockPricesHistory.Any(e => e.symbol == id && e.date == date);
         }
     }
 }

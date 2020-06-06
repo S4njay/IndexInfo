@@ -92,4 +92,5 @@ export interface StockPrice {
     dateUpdated: string;
     tickChangePositive: boolean | null;
     previousCloseChange: string | null;
+    viewCurrency:string | null;
 }

@@ -15,6 +15,8 @@ namespace IndexInfo.WebApi.Services
     {
         private readonly PlaceNameGenerator _placeNamegen;
 
+        public double RefreshInterval => 5;
+
         public FakeStockPricesService(PlaceNameGenerator placeNamegen)
         {
             _placeNamegen = placeNamegen;
@@ -30,16 +32,39 @@ namespace IndexInfo.WebApi.Services
                 longName = _placeNamegen.GenerateRandomPlaceName(),
                 previousClose = bid,
                 regularMarketPreviousClose = bid,
-                symbol = id            
+                symbol = id,
+                currency = GetCurrentBySumbol(id),
+                viewCurrency = GetCurrentBySumbol(id)
+
             };
 
             return await Task.FromResult(stockPrice);
+        }
+
+        private string GetCurrentBySumbol(string id)
+        {
+            var exchange = id.Count(x => x == '.') == 1 ?  id.Split(".")[1].ToLowerInvariant() : id;
+            if(exchange == id)
+            {
+                return "USD";
+            }
+
+            switch(exchange)
+            {
+                case "ax":
+                    return "AUD";
+                case "in":
+                    return "INR";
+                default: 
+                    return "AUD";
+            }
         }
 
         public Task<IEnumerable<StockPriceHistory>> GetStockPriceHistoryFromOutboundApi(string id, double bid)
         {
             var volatility = 0.02;
             var old_price = bid;
+            var baseDate = new DateTime (1970, 01, 01);
             var stockPriceHistory = Enumerable.Range(0, 500)
                     .Select(x =>
                     {
@@ -52,11 +77,13 @@ namespace IndexInfo.WebApi.Services
                         var change_amount = old_price * change_percent;                            
                         var close = old_price + change_amount;
                         old_price = close;
+                        
                         var s = new StockPriceHistory
                         {
                             StockPriceHistoryId = Guid.NewGuid(),
                             symbol = id,
-                            Date = DateTime.Now.Date.AddDays(-1 * x),
+                            date = DateTime.Now.Date.AddDays(-1 * x)
+                            .Subtract(baseDate).TotalSeconds,
                             Close = close,
                             Dividends = 0,
                             High = close * 1.01,

@@ -5,10 +5,13 @@
     font-weight: lighter;
 }
 
-.row.table{
+.row.table, button{    
+    cursor: pointer;
+}
+
+.row.table {
     border-bottom: dashed 1px;
     border-bottom-color: grey;
-    cursor: pointer;
 }
 
 .row.selected {

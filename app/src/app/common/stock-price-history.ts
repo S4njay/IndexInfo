@@ -1,6 +1,6 @@
 export interface StockPriceHistory {    
     symbol: string,
-    date: string,
+    date: number,
     open: number,
     high: number,
     low: number 

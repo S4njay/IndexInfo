@@ -7,6 +7,6 @@ setup(
    author='Sanjay Sharma',
    author_email='',
    packages=find_packages(), 
-   install_requires=['flask','yfinance','lxml'], #external packages as dependencies
+   install_requires=['flask','yfinance','lxml','flask_jsonpify'], #external packages as dependencies
    scripts=[]
 )

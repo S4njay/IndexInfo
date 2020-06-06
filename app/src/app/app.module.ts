@@ -10,6 +10,7 @@ import { PortfolioComponent } from './portfolio/portfolio.component';
 import { MarketsComponent } from './markets/markets.component';
 import { NewsComponent } from './news/news.component';
 import { GoogleChartsModule } from 'angular-google-charts';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -18,13 +19,14 @@ import { GoogleChartsModule } from 'angular-google-charts';
     DashboardComponent,
     PortfolioComponent,
     MarketsComponent,
-    NewsComponent
+    NewsComponent    
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    GoogleChartsModule
+    GoogleChartsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

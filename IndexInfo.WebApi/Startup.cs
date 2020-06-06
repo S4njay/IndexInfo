@@ -28,7 +28,7 @@ namespace IndexInfo.WebApi
             services.AddControllers();
             services.AddTransient<PlaceNameGenerator>();
             services.AddTransient<IServiceBus, AzureServiceBus>();
-            services.AddTransient<IStockPricesService, FakeStockPricesService>();
+            services.AddTransient<IStockPricesService, StockPricesService>();
             var corsBuilder = new CorsPolicyBuilder();
             corsBuilder.AllowAnyHeader();
             corsBuilder.AllowAnyMethod();

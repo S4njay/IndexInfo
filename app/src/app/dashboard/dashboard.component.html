@@ -1,28 +1,41 @@
 <h1>Your watchlist</h1>
-<div *ngIf="stockPrices.length > 0" style="width: 100%;">
-    <div *ngFor="let stockPrice of stockPrices">
-        <div class="row table" (click)="onSelectStock(stockPrice.symbol)" [class.selected]="selectedSymbol===stockPrice.symbol">
-            <div class="col-lg-4 nameCol">{{stockPrice.longName}}</div>
-            <div class="col symbolCol">{{stockPrice.symbol}}</div>
-            <div class="col priceCol" *ngIf="stockPrice.bid != 0"
-                [class.priceColPositive]="stockPrice.tickChangePositive === true"
-                [class.priceColNegative]="stockPrice.tickChangePositive === false">{{stockPrice.bid | number:"0.1-2"}}</div>
-            <div class="col priceCol" *ngIf="stockPrice.bid == 0">{{stockPrice.regularMarketPrice}}</div>
-            <div class="col priceCol" [class.text-danger]="stockPrice.bid < stockPrice.previousClose"
-                [class.text-success]="stockPrice.bid >  stockPrice.previousClose">
-                {{stockPrice.previousCloseChange}}</div>
-            <div class="col priceCol" *ngIf="stockPrice.bid == 0"
-                [class.text-danger]="stockPrice.regularMarketPrice <  stockPrice.previousClose"
-                [class.text-success]="stockPrice.regularMarketPrice >  stockPrice.previousClose">
-                {{stockPrice.previousCloseChange}}</div>
+<div *ngIf="stockPrices != {}" style="width: 100%;">
+    <div *ngFor="let stockPrice of stockPrices | keyvalue">
+        <div class="row table" (click)="onSelectStock(stockPrice.value.symbol)" [class.selected]="selectedSymbol===stockPrice.value.symbol">
+            <div class="col-lg-4 nameCol">{{stockPrice.value.longName}}</div>
+            <div class="col symbolCol">{{stockPrice.value.symbol}}</div>
+            <div class="col priceCol" *ngIf="stockPrice.value.bid != 0"
+                [class.priceColPositive]="stockPrice.value.tickChangePositive === true"
+                [class.priceColNegative]="stockPrice.value.tickChangePositive === false">{{stockPrice.value.bid | number:"0.1-2"}}</div>
+            <div class="col priceCol" *ngIf="stockPrice.value.bid == 0">{{stockPrice.value.regularMarketPrice}}</div>
+            <div class="col priceCol" [class.text-danger]="stockPrice.value.bid < stockPrice.value.previousClose"
+                [class.text-success]="stockPrice.value.bid >  stockPrice.value.previousClose">
+                {{stockPrice.value.previousCloseChange}}</div>
+            <div class="col priceCol" *ngIf="stockPrice.value.bid == 0"
+                [class.text-danger]="stockPrice.value.regularMarketPrice <  stockPrice.value.previousClose"
+                [class.text-success]="stockPrice.value.regularMarketPrice >  stockPrice.value.previousClose">
+                {{stockPrice.value.previousCloseChange}}</div>
         </div>
-        <div class="row" *ngIf="chart[stockPrice.symbol] && selectedSymbol===stockPrice.symbol">
+        <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
             <div class ="col chartCol">
-                <google-chart [title]="chart[stockPrice.symbol].title" [type]="chart[stockPrice.symbol].type" 
-                    [data]="chart[stockPrice.symbol].data" [columns]="chart[stockPrice.symbol].columnNames" 
-                    [options]="chart[stockPrice.symbol].options" width="800">
+                <google-chart [title]="chart[stockPrice.value.symbol].title" [type]="chart[stockPrice.value.symbol].type" 
+                    [data]="chart[stockPrice.value.symbol].data" [columns]="chart[stockPrice.value.symbol].columnNames" 
+                    [options]="chart[stockPrice.value.symbol].options" width="800">
                 </google-chart>
-            </div>        
+            </div>
+                
+        </div>
+        <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
+            <div class="col">
+                <div class="row">
+                    <div class="col" *ngFor="let currency of currencies">
+                        <button [disabled]="stockPrice.value.viewCurrency===currency"
+                            (click)="onCurrencyChange(stockPrice.value.symbol, currency)">
+                            {{currency}}
+                        </button>
+                    </div>
+                </div>
+            </div>   
         </div>
     </div>    
 </div>

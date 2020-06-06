@@ -63,7 +63,7 @@ namespace IndexInfo.WebApi.Controllers
 
             //TODO: Move To config
 
-            if (stockPrice.dateUpdated < DateTime.Now.AddSeconds(-5))
+            if (stockPrice.dateUpdated.AddSeconds(_stockPricesService.RefreshInterval) < DateTime.Now)
             {
                 System.Console.WriteLine($"Local stock stock price for {id} is old.");
                 System.Console.WriteLine($"Sending an update stock price command to service for {id}");
