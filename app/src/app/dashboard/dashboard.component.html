@@ -25,17 +25,20 @@
 
         </div>
         <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
-            <div class="col">
-                <div class="row">
-                    <div class="col" *ngFor="let currency of currencies">
-                        <button [disabled]="stockPrice.value.viewCurrency===currency"
-                            (click)="onCurrencyChange(stockPrice.value.symbol, currency)">
-                            {{currency}}
-                        </button>
-                    </div>
-                </div>
+            <div class="col" *ngFor="let currency of currencies">
+                <button [disabled]="stockPrice.value.viewCurrency===currency"
+                    (click)="onCurrencyChange(stockPrice.value.symbol, currency)">
+                    {{currency}}
+                </button>
+            </div>
+        </div>
+        <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
+            <div class="col" *ngFor="let csymbol of symbols">
+                <button [disabled]="compPairs[stockPrice.value.symbol].includes(csymbol)"
+                    (click)="onCompare(stockPrice.value.symbol, csymbol)">
+                    {{csymbol}}
+                </button>
             </div>
         </div>
     </div>
-
 </div>
