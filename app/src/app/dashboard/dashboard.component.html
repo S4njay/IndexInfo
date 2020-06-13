@@ -1,12 +1,14 @@
 <h1>Your watchlist</h1>
 <div *ngIf="stockPrices != {}" style="width: 100%;">
     <div *ngFor="let stockPrice of stockPrices | keyvalue">
-        <div class="row table" (click)="onSelectStock(stockPrice.value.symbol)" [class.selected]="selectedSymbol===stockPrice.value.symbol">
+        <div class="row table" (click)="onSelectStock(stockPrice.value.symbol)"
+            [class.selected]="selectedSymbol===stockPrice.value.symbol">
             <div class="col-lg-4 nameCol">{{stockPrice.value.longName}}</div>
             <div class="col symbolCol">{{stockPrice.value.symbol}}</div>
             <div class="col priceCol" *ngIf="stockPrice.value.bid != 0"
                 [class.priceColPositive]="stockPrice.value.tickChangePositive === true"
-                [class.priceColNegative]="stockPrice.value.tickChangePositive === false">{{stockPrice.value.bid | number:"0.1-2"}}</div>
+                [class.priceColNegative]="stockPrice.value.tickChangePositive === false">
+                {{stockPrice.value.bid | number:"0.1-2"}}</div>
             <div class="col priceCol" *ngIf="stockPrice.value.bid == 0">{{stockPrice.value.regularMarketPrice}}</div>
             <div class="col priceCol" [class.text-danger]="stockPrice.value.bid < stockPrice.value.previousClose"
                 [class.text-success]="stockPrice.value.bid >  stockPrice.value.previousClose">
@@ -16,14 +18,11 @@
                 [class.text-success]="stockPrice.value.regularMarketPrice >  stockPrice.value.previousClose">
                 {{stockPrice.value.previousCloseChange}}</div>
         </div>
-        <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
-            <div class ="col chartCol">
-                <google-chart [title]="chart[stockPrice.value.symbol].title" [type]="chart[stockPrice.value.symbol].type" 
-                    [data]="chart[stockPrice.value.symbol].data" [columns]="chart[stockPrice.value.symbol].columnNames" 
-                    [options]="chart[stockPrice.value.symbol].options" width="800">
-                </google-chart>
+        <div class="row">
+            <div class="col chartCol">
+                <div [attr.id]="'chart-' + stockPrice.value.symbol"></div>
             </div>
-                
+
         </div>
         <div class="row" *ngIf="chart[stockPrice.value.symbol] && selectedSymbol===stockPrice.value.symbol">
             <div class="col">
@@ -35,7 +34,8 @@
                         </button>
                     </div>
                 </div>
-            </div>   
+            </div>
         </div>
-    </div>    
+    </div>
+
 </div>

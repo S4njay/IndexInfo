@@ -3,8 +3,17 @@ import { StockPriceService } from '../common/stock-price.service';
 import { StockPrice } from '../common/stock-price';
 import { interval } from 'rxjs';
 import { StockPriceHistory } from '../common/stock-price-history';
+import * as Highcharts from 'highcharts/highstock';
 
+declare var require: any;
+let Boost = require('highcharts/modules/boost');
+let noData = require('highcharts/modules/no-data-to-display');
+let More = require('highcharts/highcharts-more');
 
+Boost(Highcharts);
+noData(Highcharts);
+More(Highcharts);
+noData(Highcharts);
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +38,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.buildCurrencyPairs();
     this.update();
-    interval(15000).subscribe(() => this.update());
+    // interval(15000).subscribe(() => this.update());
   }
 
   buildCurrencyPairs() {
@@ -83,6 +92,29 @@ export class DashboardComponent implements OnInit {
       })
   }
 
+  renderChart(symbol, data) {
+    Highcharts.stockChart('chart-' + symbol, {
+
+
+      rangeSelector: {
+          selected: 1
+      },
+
+      title: {
+          text: symbol
+      },
+
+      series: [{
+          name: symbol,
+          data: data,
+          tooltip: {
+              valueDecimals: 2
+          },
+          type: 'ohlc'
+      }]
+  });
+  }
+
   private setChart(data: StockPriceHistory[], symbol: any) {
     var TwoDArrayData = this.prepareChartData(data);
     this.chart[symbol] = {
@@ -92,6 +124,8 @@ export class DashboardComponent implements OnInit {
       height: 800,
       data: TwoDArrayData
     };
+    
+    this.renderChart(symbol, TwoDArrayData)
   }
 
   onCurrencyChange(symbol, currency){
@@ -121,8 +155,8 @@ export class DashboardComponent implements OnInit {
   prepareChartData(data: StockPriceHistory[]) {
     let finalData = [];
     let cnt = data.length - 1;
-    data.forEach(element => {
-      let ohlc = [new Date(element.date * 1000), element.close];
+    data.forEach(e => {
+      let ohlc = [e.date * 1000, e.open, e.high, e.low, e.close];
       cnt--;
       finalData.push(ohlc);
     });
