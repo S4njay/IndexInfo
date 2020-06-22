@@ -59,6 +59,7 @@ export class DashboardComponent implements OnInit {
       this.stockPriceService
         .getStockPriceHistory(element)
         .subscribe(data => {
+          this.stockPriceHistories[element] = data;
           let ohlcData = this.prepareChartData(data);
           let lineData = this.prepareChartData(data, 'line');
           this.chart[element] = {
@@ -119,15 +120,23 @@ export class DashboardComponent implements OnInit {
   }
 
   renderCompareSeriesChart(symbols: string[]) {
-    let seriesOptions: any[] = symbols.map(x => { 
-      let lineData = this.chart[x]['line'];
+    let seriesOptions: any[] = symbols.map(x => {
+      let lineData;
+      if(x === this.selectedSymbol) {
+        // get data from chart as it might be currency adjusted.
+        lineData = this.chart[x]['line'];
+      }
+      else
+      {
+        // force get unadjusted data as for all comp pairs
+        lineData = this.prepareChartData(this.stockPriceHistories[x], 'line');
+      }
       return {        
-        name: x, data: lineData 
+        name: x, data: lineData
       }
     });
 
     Highcharts.stockChart('chart-' + symbols[0], {
-
       rangeSelector: {
         selected: 4
       },
@@ -242,13 +251,19 @@ export class DashboardComponent implements OnInit {
 
     let finalData = [];
 
-    for (var i = 0; i < Math.min(fHis.length, fCur.length); i++) {
+    for (var i = 0; i < fHis.length; i++) {
+      let date = fHis[i][0];
+      let cFcur = fCur.find(x => x[0] === date);
+      if(cFcur == undefined) {
+        continue;
+      }
+
       let ohlc = [
         fHis[i][0],
-        fHis[i][1] * fCur[i][1],
-        fHis[i][2] * fCur[i][2],
-        fHis[i][3] * fCur[i][3],
-        fHis[i][4] * fCur[i][3]
+        fHis[i][1] * cFcur[1],
+        fHis[i][2] * cFcur[2],
+        fHis[i][3] * cFcur[3],
+        fHis[i][4] * cFcur[3]
       ];
 
       finalData.push(ohlc);

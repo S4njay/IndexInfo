@@ -40,9 +40,10 @@
     text-align: right;
 }
 
-.col.chartCol {
-    width:100%;
-    text-align: center !important;
+.chartCol {
+    float: left;
+    position: relative;
+    width: 90%;
 }
 
 @keyframes changePositive {
