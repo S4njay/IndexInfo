@@ -14,7 +14,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private stockPriceService: StockPriceService) { }
 
-  symbols: string[] = ['IIND.AX','NDIA.AX','^NSEI'];
+  symbols: string[] = ['IIND.AX','NDIA.AX','^NSEI','^GSPC','^AXJO'];
   currencies = ['AUD', 'USD', 'INR'];
   currencyPairs: string[] = [];
   compPairs = {};
@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
-    this.symbols = this.symbols.concat(this.currencyPairs);
+    // this.symbols = this.symbols.concat(this.currencyPairs);
   }
 
   update() {
@@ -59,15 +59,27 @@ export class DashboardComponent implements OnInit {
       this.stockPriceService
         .getStockPriceHistory(element)
         .subscribe(data => {
-          this.stockPriceHistories[element] = data;
-          let ohlcData = this.prepareChartData(data);
-          let lineData = this.prepareChartData(data, 'line');
-          this.chart[element] = {
-            ohlc: ohlcData,
-            line: lineData
-          };
+          this.SetHisNChart(element, data);
         })
     });
+
+    this.currencyPairs.forEach(element => {
+      this.stockPriceService
+        .getStockPriceHistory(element)
+        .subscribe(data => {
+          this.SetHisNChart(element, data);
+        })
+    });
+  }
+
+  private SetHisNChart(element: string, data: StockPriceHistory[]) {
+    this.stockPriceHistories[element] = data;
+    let ohlcData = this.prepareChartData(data);
+    let lineData = this.prepareChartData(data, 'line');
+    this.chart[element] = {
+      ohlc: ohlcData,
+      line: lineData
+    };
   }
 
   onSelectStock(symbol) {
@@ -97,6 +109,14 @@ export class DashboardComponent implements OnInit {
       title: {
         text: symbol
       },
+      yAxis : {
+        labels:{
+            align:'right',
+            x:-10
+        },
+        lineWidth : 0,
+        offset : 50
+    },
 
       series: [{
         name: symbol,
