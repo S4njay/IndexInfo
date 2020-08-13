@@ -1,0 +1,5 @@
+osascript -e 'tell app "Terminal"
+    do script "cd ~/Workdir/IndexInfo/IndexInfo.WebApi; dotnet run;"
+    do script "cd ~/Workdir/IndexInfo/IndexInfo.OutboundApi/api; python3 api.py;"
+     do script "cd ~/Workdir/IndexInfo/app; ng serve -o;"
+end tell'

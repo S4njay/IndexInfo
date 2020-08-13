@@ -14,7 +14,9 @@ export class DashboardComponent implements OnInit {
 
   constructor(private stockPriceService: StockPriceService) { }
 
-  symbols: string[] = ['IIND.AX','NDIA.AX','^NSEI','^GSPC','^AXJO'];
+  symbols: string[] = ['IIND.AX','NDIA.AX','^NSEI','^GSPC','^AXJO','^IXIC',
+  'WORK','MSFT','GOOG','AMZN','AAPL','NFLX','DIS', 'HDB',
+  'RELIANCE.NS','HDFCBANK.NS','MARUTI.NS'];
   currencies = ['AUD', 'USD', 'INR'];
   currencyPairs: string[] = [];
   compPairs = {};
@@ -24,6 +26,7 @@ export class DashboardComponent implements OnInit {
   interval: any;
   chart = {};
   selectedSymbol = '';
+  volChart = false;
 
   ngOnInit() {
     this.buildCurrencyPairs();
@@ -120,11 +123,11 @@ export class DashboardComponent implements OnInit {
 
       series: [{
         name: symbol,
-        data: this.chart[symbol]['ohlc'],
+        data: this.chart[symbol]['line'],
         tooltip: {
           valueDecimals: 2
         },
-        type: 'ohlc'
+        type: 'line'
       }]
     });
   }
@@ -146,6 +149,7 @@ export class DashboardComponent implements OnInit {
         // get data from chart as it might be currency adjusted.
         lineData = this.chart[x]['line'];
       }
+      
       else
       {
         // force get unadjusted data as for all comp pairs
@@ -215,7 +219,6 @@ export class DashboardComponent implements OnInit {
 
     this.chart[symbol]['ohlc'] = adjustedSphOhlc;
 
-    this.renderSingleSeriesChart(symbol);
 
     let adjustedSphLine = this.adjustForCurrencyOhlc(
       this.chart[symbol]['line'],
@@ -228,6 +231,9 @@ export class DashboardComponent implements OnInit {
     this.chart[symbol]['line'] = adjustedSphLine;
 
     this.stockPrices[symbol].viewCurrency = currency;
+
+    this.renderSingleSeriesChart(symbol);
+
   }
 
   prepareChartData(data: StockPriceHistory[], type: string = 'ohlc') {
